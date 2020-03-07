@@ -1,8 +1,10 @@
 import gym
-import liveline_gym
-env = gym.make('liveline-v0', verbosity=0)
+# import liveline_gym
+# env = gym.make('liveline-v0', verbosity=0)
 
-# After pasting ddpg and core.mlp_actor_critic...
+from spinup.algos.tf1.ddpg.ddpg import ReplayBuffer, ddpg
+# from spinup.algos.tf1.ddpg.core import mlp_actor_critic, mlp, placeholder, placeholders, get_vars, count_vars
+from spinup.algos.tf1.ddpg import core
 
 from spinup.utils.run_utils import setup_logger_kwargs
 logger_kwargs = setup_logger_kwargs('foo_experiment', 42)
