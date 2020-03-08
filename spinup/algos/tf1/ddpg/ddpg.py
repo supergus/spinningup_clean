@@ -5,7 +5,7 @@ import time
 from spinup.algos.tf1.ddpg import core
 from spinup.algos.tf1.ddpg.core import get_vars
 from spinup.utils.logx import EpochLogger
-import liveline_gym
+from spinup.utils.logx import colorize
 
 
 class ReplayBuffer:
@@ -126,6 +126,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
     """
 
+    # TODO: Didn't I have to reshape or rescale policy outputs last time?
+
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
 
@@ -135,6 +137,10 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     env, test_env = env_fn(), env_fn()
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
+
+    # DEBUG: cc
+    env.set_batch_trimming(100, 'both')
+    test_env.set_batch_trimming(100, 'both')
 
     # Action limit for clamping: critically, assumes all dimensions share the same bound!
     act_limit = env.action_space.high[0]
@@ -200,7 +206,18 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
             while not (d or (ep_len == max_ep_len)):
                 # Take deterministic actions at test time (noise_scale=0)
-                o, r, d, _ = test_env.step(get_action(o, 0))
+
+                # DEBUG cc
+                # TODO: Why is this always (nan, nan, nan) ?!?!??!?!
+                test_action = get_action(o, 0)
+                print(f'\tTaking test action: {str(test_action)}')
+
+                # o, r, d, _ = test_env.step(get_action(o, 0))
+                o, r, d, _ = test_env.step(test_action)
+
+                # DEBUG cc
+                print(f'\ttest_env playhead after step: {test_env.playhead}\n')
+
                 ep_ret += r
                 ep_len += 1
             logger.store(TestEpRet=ep_ret, TestEpLen=ep_len)
@@ -212,6 +229,9 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
     # Main loop: collect experience in env and update/log each epoch
     for t in range(total_steps):
+
+        # DEBUG cc
+        print(f'\nt: {t}, env.playhead: {env.playhead}')
 
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards, 
@@ -240,11 +260,20 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
         # End of trajectory handling
         if d or (ep_len == max_ep_len):
+
+            # DEBUG cc
+            my_str = f'\n\nEnd of trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
+            print(colorize(my_str, color='yellow', bold=True))
+
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, ep_ret, ep_len = env.reset(), 0, 0
 
         # Update handling
         if t >= update_after and t % update_every == 0:
+
+            # DEBUG cc
+            print(colorize('\n\nUpdating Q-learning and Policy...\n', color='magenta', bold=True))
+
             for _ in range(update_every):
                 batch = replay_buffer.sample_batch(batch_size)
                 feed_dict = {x_ph: batch['obs1'],
@@ -264,6 +293,12 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
         # End of epoch wrap-up
         if (t + 1) % steps_per_epoch == 0:
+
+            # DEBUG cc
+            print('\n\n')
+            print(colorize('='*120, color='blue', bold=True))
+            print(colorize('End of epoch wrap-up\n\n', color='blue', bold=True))
+
             epoch = (t + 1) // steps_per_epoch
 
             # Save model
@@ -284,7 +319,14 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             logger.log_tabular('LossPi', average_only=True)
             logger.log_tabular('LossQ', average_only=True)
             logger.log_tabular('Time', time.time() - start_time)
+
+            # DEBUG cc
+            print('')
+
             logger.dump_tabular()
+
+            # DEBUG cc
+            print('')
 
 
 if __name__ == '__main__':

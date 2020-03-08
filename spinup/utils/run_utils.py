@@ -1,5 +1,5 @@
 from spinup.user_config import DEFAULT_DATA_DIR, FORCE_DATESTAMP, \
-                               DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
+    DEFAULT_SHORTHAND, WAIT_BEFORE_LAUNCH
 from spinup.utils.logx import colorize
 from spinup.utils.mpi_tools import mpi_fork, msg
 from spinup.utils.serialization_utils import convert_json
@@ -21,6 +21,7 @@ from tqdm import trange
 import zlib
 
 DIV_LINE_WIDTH = 80
+
 
 def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
     """
@@ -70,7 +71,7 @@ def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
     # Make base path
     ymd_time = time.strftime("%Y-%m-%d_") if datestamp else ''
     relpath = ''.join([ymd_time, exp_name])
-    
+
     if seed is not None:
         # Make a seed-specific subfolder in the experiment directory.
         if datestamp:
@@ -81,12 +82,12 @@ def setup_logger_kwargs(exp_name, seed=None, data_dir=None, datestamp=False):
         relpath = osp.join(relpath, subfolder)
 
     data_dir = data_dir or DEFAULT_DATA_DIR
-    logger_kwargs = dict(output_dir=osp.join(data_dir, relpath), 
+    logger_kwargs = dict(output_dir=osp.join(data_dir, relpath),
                          exp_name=exp_name)
     return logger_kwargs
 
 
-def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None, 
+def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
                     datestamp=False, **kwargs):
     """
     Run a function (thunk) with hyperparameters (kwargs), plus configuration.
@@ -128,7 +129,7 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
     """
 
     # Determine number of CPU cores to run on
-    num_cpu = psutil.cpu_count(logical=False) if num_cpu=='auto' else num_cpu
+    num_cpu = psutil.cpu_count(logical=False) if num_cpu == 'auto' else num_cpu
 
     # Send random seed to thunk
     kwargs['seed'] = seed
@@ -138,7 +139,7 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
     print(exp_name + '\n')
     print(colorize('with kwargs:\n', color='cyan', bold=True))
     kwargs_json = convert_json(kwargs)
-    print(json.dumps(kwargs_json, separators=(',',':\t'), indent=4, sort_keys=True))
+    print(json.dumps(kwargs_json, separators=(',', ':\t'), indent=4, sort_keys=True))
     print('\n')
 
     # Set up logger output directory
@@ -152,7 +153,7 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
         if 'env_name' in kwargs:
             import gym
             env_name = kwargs['env_name']
-            kwargs['env_fn'] = lambda : gym.make(env_name)
+            kwargs['env_fn'] = lambda: gym.make(env_name)
             del kwargs['env_name']
 
         # Fork into multiple processes
@@ -170,7 +171,7 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
     try:
         subprocess.check_call(cmd, env=os.environ)
     except CalledProcessError:
-        err_msg = '\n'*3 + '='*DIV_LINE_WIDTH + '\n' + dedent("""
+        err_msg = '\n' * 3 + '=' * DIV_LINE_WIDTH + '\n' + dedent("""
 
             There appears to have been an error in your experiment.
 
@@ -179,20 +180,20 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
             for diagnosing the error), shows the stack leading up to the 
             experiment launch.
 
-            """) + '='*DIV_LINE_WIDTH + '\n'*3
+            """) + '=' * DIV_LINE_WIDTH + '\n' * 3
         print(err_msg)
         raise
 
     # Tell the user about where results are, and how to check them
     logger_kwargs = kwargs['logger_kwargs']
 
-    plot_cmd = 'python -m spinup.run plot '+logger_kwargs['output_dir']
+    plot_cmd = 'python -m spinup.run plot ' + logger_kwargs['output_dir']
     plot_cmd = colorize(plot_cmd, 'green')
 
-    test_cmd = 'python -m spinup.run test_policy '+logger_kwargs['output_dir']
+    test_cmd = 'python -m spinup.run test_policy ' + logger_kwargs['output_dir']
     test_cmd = colorize(test_cmd, 'green')
 
-    output_msg = '\n'*5 + '='*DIV_LINE_WIDTH +'\n' + dedent("""\
+    output_msg = '\n' * 5 + '=' * DIV_LINE_WIDTH + '\n' + dedent("""\
     End of experiment.
 
 
@@ -206,13 +207,14 @@ def call_experiment(exp_name, thunk, seed=0, num_cpu=1, data_dir=None,
     %s
 
 
-    """%(plot_cmd,test_cmd)) + '='*DIV_LINE_WIDTH + '\n'*5
+    """ % (plot_cmd, test_cmd)) + '=' * DIV_LINE_WIDTH + '\n' * 5
 
     print(output_msg)
 
 
 def all_bools(vals):
-    return all([isinstance(v,bool) for v in vals])
+    return all([isinstance(v, bool) for v in vals])
+
 
 def valid_str(v):
     """ 
@@ -255,23 +257,23 @@ class ExperimentGrid:
 
     def print(self):
         """Print a helpful report about the experiment grid."""
-        print('='*DIV_LINE_WIDTH)
+        print('=' * DIV_LINE_WIDTH)
 
         # Prepare announcement at top of printing. If the ExperimentGrid has a
         # short name, write this as one line. If the name is long, break the
         # announcement over two lines.
         base_msg = 'ExperimentGrid %s runs over parameters:\n'
-        name_insert = '['+self._name+']'
-        if len(base_msg%name_insert) <= 80:
-            msg = base_msg%name_insert
+        name_insert = '[' + self._name + ']'
+        if len(base_msg % name_insert) <= 80:
+            msg = base_msg % name_insert
         else:
-            msg = base_msg%(name_insert+'\n')
+            msg = base_msg % (name_insert + '\n')
         print(colorize(msg, color='green', bold=True))
 
         # List off parameters, shorthands, and possible values.
         for k, v, sh in zip(self.keys, self.vals, self.shs):
             color_k = colorize(k.ljust(40), color='cyan', bold=True)
-            print('', color_k, '['+sh+']' if sh is not None else '', '\n')
+            print('', color_k, '[' + sh + ']' if sh is not None else '', '\n')
             for i, val in enumerate(v):
                 print('\t' + str(convert_json(val)))
             print()
@@ -289,8 +291,7 @@ class ExperimentGrid:
         print(' Variants, counting seeds: '.ljust(40), nvars_total)
         print(' Variants, not counting seeds: '.ljust(40), nvars_seedless)
         print()
-        print('='*DIV_LINE_WIDTH)
-
+        print('=' * DIV_LINE_WIDTH)
 
     def _default_shorthand(self, key):
         # Create a default shorthand for the key, built from the first 
@@ -298,8 +299,10 @@ class ExperimentGrid:
         # But if the first three letters contains something which isn't
         # alphanumeric, shear that off.
         valid_chars = "%s%s" % (string.ascii_letters, string.digits)
+
         def shear(x):
             return ''.join(z for z in x[:3] if z in valid_chars)
+
         sh = '-'.join([shear(x) for x in key.split(':')])
         return sh
 
@@ -372,7 +375,7 @@ class ExperimentGrid:
             # Except, however, when the parameter is 'seed'. Seed is handled
             # differently so that runs of the same experiment, with different 
             # seeds, will be grouped by experiment name.
-            if (len(v)>1 or inn) and not(k=='seed'):
+            if (len(v) > 1 or inn) and not (k == 'seed'):
 
                 # Use the shorthand if available, otherwise the full name.
                 param_name = sh if sh is not None else k
@@ -382,7 +385,7 @@ class ExperimentGrid:
                 variant_val = get_val(variant, k)
 
                 # Append to name
-                if all_bools(v): 
+                if all_bools(v):
                     # If this is a param which only takes boolean values,
                     # only include in the name if it's True for this variant.
                     var_name += ('_' + param_name) if variant_val else ''
@@ -395,7 +398,7 @@ class ExperimentGrid:
         """
         Recursively builds list of valid variants.
         """
-        if len(keys)==1:
+        if len(keys) == 1:
             pre_variants = [dict()]
         else:
             pre_variants = self._variants(keys[1:], vals[1:])
@@ -450,21 +453,21 @@ class ExperimentGrid:
             new_var = dict()
             unflatten_set = set()
 
-            for k,v in var.items():
+            for k, v in var.items():
                 if ':' in k:
                     splits = k.split(':')
                     k0 = splits[0]
                     assert k0 not in new_var or isinstance(new_var[k0], dict), \
                         "You can't assign multiple values to the same key."
 
-                    if not(k0 in new_var):
+                    if not (k0 in new_var):
                         new_var[k0] = dict()
 
                     sub_k = ':'.join(splits[1:])
                     new_var[k0][sub_k] = v
                     unflatten_set.add(k0)
                 else:
-                    assert not(k in new_var), \
+                    assert not (k in new_var), \
                         "You can't assign multiple values to the same key."
                     new_var[k] = v
 
@@ -502,13 +505,12 @@ class ExperimentGrid:
         # Print variant names for the user.
         var_names = set([self.variant_name(var) for var in variants])
         var_names = sorted(list(var_names))
-        line = '='*DIV_LINE_WIDTH
-        preparing = colorize('Preparing to run the following experiments...', 
+        line = '=' * DIV_LINE_WIDTH
+        preparing = colorize('Preparing to run the following experiments...',
                              color='green', bold=True)
         joined_var_names = '\n'.join(var_names)
         announcement = f"\n{preparing}\n\n{joined_var_names}\n\n{line}"
         print(announcement)
-
 
         if WAIT_BEFORE_LAUNCH > 0:
             delay_msg = colorize(dedent("""
@@ -517,15 +519,15 @@ class ExperimentGrid:
             To customize or disable this behavior, change WAIT_BEFORE_LAUNCH in
             spinup/user_config.py.
 
-            """), color='cyan', bold=True)+line
+            """), color='cyan', bold=True) + line
             print(delay_msg)
             wait, steps = WAIT_BEFORE_LAUNCH, 100
-            prog_bar = trange(steps, desc='Launching in...', 
-                              leave=False, ncols=DIV_LINE_WIDTH, 
+            prog_bar = trange(steps, desc='Launching in...',
+                              leave=False, ncols=DIV_LINE_WIDTH,
                               mininterval=0.25,
                               bar_format='{desc}: {bar}| {remaining} {elapsed}')
             for _ in prog_bar:
-                time.sleep(wait/steps)
+                time.sleep(wait / steps)
 
         # Run the variants.
         for var in variants:
@@ -542,16 +544,16 @@ class ExperimentGrid:
                 # Assume thunk is given as a function.
                 thunk_ = thunk
 
-            call_experiment(exp_name, thunk_, num_cpu=num_cpu, 
+            call_experiment(exp_name, thunk_, num_cpu=num_cpu,
                             data_dir=data_dir, datestamp=datestamp, **var)
 
 
 def test_eg():
     eg = ExperimentGrid()
-    eg.add('test:a', [1,2,3], 'ta', True)
-    eg.add('test:b', [1,2,3])
-    eg.add('some', [4,5])
-    eg.add('why', [True,False])
+    eg.add('test:a', [1, 2, 3], 'ta', True)
+    eg.add('test:b', [1, 2, 3])
+    eg.add('some', [4, 5])
+    eg.add('why', [True, False])
     eg.add('huh', 5)
     eg.add('no', 6, in_name=True)
     return eg.variants()
