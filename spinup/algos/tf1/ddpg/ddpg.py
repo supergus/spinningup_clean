@@ -264,6 +264,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             # DEBUG cc
             my_str = f'\n\nEnd of trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
             print(colorize(my_str, color='yellow', bold=True))
+            print('Resetting env...')
 
             logger.store(EpRet=ep_ret, EpLen=ep_len)
             o, ep_ret, ep_len = env.reset(), 0, 0
