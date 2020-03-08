@@ -220,7 +220,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 # DEBUG cc
                 print(colorize(f'Test rollout step: {ep_len} (of max {max_ep_len}), '
                                f'epoch: {j} (of {num_test_episodes})',
-                               color='green', bold=True))
+                               color='gray', bold=True))
 
                 # Take deterministic actions at test time (noise_scale=0)
                 test_action = get_action(o, 0)
