@@ -203,13 +203,18 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
     def test_agent():
         for j in range(num_test_episodes):
+
+            # DEBUG cc
+            print(colorize(f'\nj: {j} / {num_test_episodes - 1} test episodes, env.playhead: {env.playhead}',
+                           color='gray', bold=True))
+
             o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
+
             while not (d or (ep_len == max_ep_len)):
                 # Take deterministic actions at test time (noise_scale=0)
+                test_action = get_action(o, 0)
 
                 # DEBUG cc
-                # TODO: Why is test_action always (nan, nan, nan) ?!?!??!?!
-                test_action = get_action(o, 0)
                 print(f'\tTaking test action: {str(test_action)}')
 
                 # o, r, d, _ = test_env.step(get_action(o, 0))
@@ -220,26 +225,38 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
                 ep_ret += r
                 ep_len += 1
+
+            # DEBUG cc
+            my_str = f'\n\nEnd of test trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
+            print(colorize(my_str, color='yellow', bold=True))
+
             logger.store(TestEpRet=ep_ret, TestEpLen=ep_len)
 
     # Prepare for interaction with environment
     total_steps = steps_per_epoch * epochs
     start_time = time.time()
+
+    # DEBUG cc
+    print('Resetting env...')
+
     o, ep_ret, ep_len = env.reset(), 0, 0
 
     # Main loop: collect experience in env and update/log each epoch
     for t in range(total_steps):
 
         # DEBUG cc
-        print(f'\nt: {t}, env.playhead: {env.playhead}')
+        epoch = (t + 1) // steps_per_epoch
+        print(colorize(f'\nt: {t}, epoch: {epoch}, env.playhead: {env.playhead}', color='gray', bold=True))
 
         # Until start_steps have elapsed, randomly sample actions
         # from a uniform distribution for better exploration. Afterwards, 
         # use the learned policy (with some noise, via act_noise). 
         if t > start_steps:
             a = get_action(o, act_noise)
+            print(colorize(f'\tAction from policy: {str(a)}', color='white', bold=False))
         else:
             a = env.action_space.sample()
+            print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {str(a)}', color='white', bold=False))
 
         # Step the env
         o2, r, d, _ = env.step(a)
@@ -262,7 +279,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         if d or (ep_len == max_ep_len):
 
             # DEBUG cc
-            my_str = f'\n\nEnd of trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
+            my_str = f'\n\nEnd of training trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
             print(colorize(my_str, color='yellow', bold=True))
             print('Resetting env...')
 
@@ -307,6 +324,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 logger.save_state({'env': env}, None)
 
             # Test the performance of the deterministic version of the agent.
+            print(colorize('\n\nTesting agent...\n\n', color='red', bold=True))
             test_agent()
 
             # Log info about epoch

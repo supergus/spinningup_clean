@@ -11,9 +11,13 @@ ddpg(lambda: gym.make('liveline-v0'), actor_critic=core.mlp_actor_critic,
      ac_kwargs=dict(hidden_sizes=[256] * 2),
      gamma=0.99, seed=42,
 
-     # DEBUG: Delete later
-     steps_per_epoch=40, epochs=1, start_steps=100, update_after=10, update_every=5,
-     max_ep_len=10, num_test_episodes=1,
+     # # DEBUG: Delete later
+     # steps_per_epoch=40, epochs=1, start_steps=3, update_after=10, update_every=5,
+     # max_ep_len=10, num_test_episodes=1,
+
+     # # Defaults
+     # steps_per_epoch=4000, epochs=100, start_steps=10000, update_after=1000, update_every=50,
+     # max_ep_len=1000, num_test_episodes=10,
 
      logger_kwargs=logger_kwargs)
 
