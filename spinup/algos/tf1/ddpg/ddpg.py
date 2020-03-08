@@ -196,6 +196,11 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     # Setup model saving
     logger.setup_tf_saver(sess, inputs={'x': x_ph, 'a': a_ph}, outputs={'pi': pi, 'q': q})
 
+    def action_to_string(my_action):
+        list_of_strings = [f'{format(elem, ".3f"):>6}' for elem in my_action]
+        a_str = '[' + ', '.join(list_of_strings) + ']'
+        return a_str
+
     def get_action(o, noise_scale):
         a = sess.run(pi, feed_dict={x_ph: o.reshape(1, -1)})[0]
         a += noise_scale * np.random.randn(act_dim)
@@ -205,17 +210,23 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         for j in range(num_test_episodes):
 
             # DEBUG cc
-            print(colorize(f'\nj: {j} / {num_test_episodes - 1} test episodes, env.playhead: {env.playhead}',
+            print(colorize(f'\nj: {j} / {num_test_episodes} test episodes, env.playhead: {env.playhead}',
                            color='gray', bold=True))
 
             o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
 
             while not (d or (ep_len == max_ep_len)):
+
+                # DEBUG cc
+                print(colorize(f'Test rollout step: {ep_len} (of max {max_ep_len}), '
+                               f'epoch: {j} (of {num_test_episodes})',
+                               color='green', bold=True))
+
                 # Take deterministic actions at test time (noise_scale=0)
                 test_action = get_action(o, 0)
 
                 # DEBUG cc
-                print(f'\tTaking test action: {str(test_action)}')
+                print(colorize(f'\tTaking test action: {action_to_string(test_action)}', color='red', bold=False))
 
                 # o, r, d, _ = test_env.step(get_action(o, 0))
                 o, r, d, _ = test_env.step(test_action)
@@ -253,10 +264,11 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         # use the learned policy (with some noise, via act_noise). 
         if t > start_steps:
             a = get_action(o, act_noise)
-            print(colorize(f'\tAction from policy: {str(a)}', color='white', bold=False))
+            print(colorize(f'\tAction from policy: {action_to_string(a)}', color='white', bold=False))
         else:
             a = env.action_space.sample()
-            print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {str(a)}', color='white', bold=False))
+            print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {action_to_string(a)}',
+                           color='white', bold=False))
 
         # Step the env
         o2, r, d, _ = env.step(a)
