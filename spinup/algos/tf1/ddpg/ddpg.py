@@ -208,7 +208,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 # Take deterministic actions at test time (noise_scale=0)
 
                 # DEBUG cc
-                # TODO: Why is this always (nan, nan, nan) ?!?!??!?!
+                # TODO: Why is test_action always (nan, nan, nan) ?!?!??!?!
                 test_action = get_action(o, 0)
                 print(f'\tTaking test action: {str(test_action)}')
 
