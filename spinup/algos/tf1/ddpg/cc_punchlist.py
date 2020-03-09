@@ -12,3 +12,9 @@
 
 # TODO: Saving of model... is it overwriting each epoch or only if "improved" performance?
 
+# TODO: Create method to read config JSON & env.info() & controller info & epochs elapsed & load model, then
+#  resume training. Important - with 20+ hrs of training time, you WILL lose power etc.
+#  Can we also load progress through GridSearch?
+
+
+
