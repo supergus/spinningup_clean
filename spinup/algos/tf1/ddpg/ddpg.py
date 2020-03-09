@@ -137,24 +137,14 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     env, test_env = env_fn(), env_fn()
 
     # DEBUG: cc
-    # env.set_batch_trimming(100, 'both')
-    # test_env.set_batch_trimming(100, 'both')
-    print(colorize('\n\nUpdating environment parameters...\n\n', color='yellow', bold=False))
-    param_dict = {'action_max': 2.5,
-                  'action_min': -2.5,
-                  'obs_max': 3,
-                  'obs_min': -3,
-                  'base_reward': 1,
-                  'rmse_factor': 1,
-                  'reg_factor': 0.1,
-                  'trim_batches_start': 100,
+    env_params = {'trim_batches_start': 100,
                   'trim_batches_end': 100,
-                  'controller_mode': 'absolute',
                   }
+    print(colorize('\n\nUpdating environment parameters...\n\n', color='yellow', bold=False))
     print(colorize('\t> Training environment:', color='yellow', bold=False))
-    env.update(**param_dict)
+    env.update(**env_params)
     print(colorize('\n\n\t> Test environment:', color='yellow', bold=False))
-    test_env.update(**param_dict)
+    test_env.update(**env_params)
 
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
@@ -233,7 +223,6 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
 
             while not (d or (ep_len == max_ep_len)):
-
                 # DEBUG cc
                 print(colorize(f'Test rollout step: {ep_len} (of max {max_ep_len}), '
                                f'epoch: {j} (of {num_test_episodes})',
@@ -306,7 +295,6 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
         # End of trajectory handling
         if d or (ep_len == max_ep_len):
-
             # DEBUG cc
             my_str = f'\n\nEnd of training trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
             print(colorize(my_str, color='yellow', bold=True))
@@ -343,7 +331,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
             # DEBUG cc
             print('\n\n')
-            print(colorize('='*120, color='blue', bold=True))
+            print(colorize('=' * 120, color='blue', bold=True))
             print(colorize('End of epoch wrap-up\n\n', color='blue', bold=True))
 
             epoch = (t + 1) // steps_per_epoch
@@ -375,6 +363,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
             # DEBUG cc
             print('')
+
+    return env
 
 
 if __name__ == '__main__':
