@@ -10,3 +10,5 @@
 
 # TODO: When saving config JSON, also save env.info() so we can audit environment parameters.
 
+# TODO: Saving of model... is it overwriting each epoch or only if "improved" performance?
+
