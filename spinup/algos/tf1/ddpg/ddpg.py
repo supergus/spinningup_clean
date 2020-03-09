@@ -43,7 +43,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
          steps_per_epoch=4000, epochs=100, replay_size=int(1e6), gamma=0.99,
          polyak=0.995, pi_lr=1e-3, q_lr=1e-3, batch_size=100, start_steps=10000,
          update_after=1000, update_every=50, act_noise=0.1, num_test_episodes=10,
-         max_ep_len=1000, logger_kwargs=dict(), save_freq=1):
+         max_ep_len=1000, logger_kwargs=dict(), save_freq=1, env_params=None,
+         controller_params=None,):
     """
     Deep Deterministic Policy Gradient (DDPG)
 
@@ -124,6 +125,9 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         save_freq (int): How often (in terms of gap between epochs) to save
             the current policy and value function.
 
+        env_params (dict): Environment settings.
+
+        controller_params (dict): Controller settings.
     """
 
     # TODO: Didn't I have to reshape or rescale policy outputs last time?
@@ -137,14 +141,17 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     env, test_env = env_fn(), env_fn()
 
     # DEBUG: cc
-    env_params = {'trim_batches_start': 100,
-                  'trim_batches_end': 100,
-                  }
     print(colorize('\n\nUpdating environment parameters...\n\n', color='yellow', bold=False))
+
     print(colorize('\t> Training environment:', color='yellow', bold=False))
     env.update(**env_params)
+    for c in env.controllers:
+        c.update_parameters(**controller_params)
+
     print(colorize('\n\n\t> Test environment:', color='yellow', bold=False))
     test_env.update(**env_params)
+    for c in test_env.controllers:
+        c.update_parameters(**controller_params)
 
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
