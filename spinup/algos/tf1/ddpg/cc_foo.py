@@ -56,9 +56,3 @@ env = ddpg(lambda: gym.make('liveline-v0'), actor_critic=core.mlp_actor_critic,
            controller_params=controller_params,
 
            logger_kwargs=logger_kwargs)
-
-# TODO: Solve mystery about 'nan' actions from test_env
-# TODO: Does everything run faster on CPU or GPU?
-
-# TODO: Once running, open up limits on controllers to +/- inf, just use env's action and obs limits.
-#  Compare with tighter limits on controllers...

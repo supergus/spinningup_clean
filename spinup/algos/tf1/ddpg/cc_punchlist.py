@@ -4,9 +4,10 @@
 # Evaluate
 # Try another algo? TD3, SAC
 
+# TODO: With controller limits "wide open" we see controller outputs like +/- 32 !!! With nudges like 0.8.
+#  How can that be when we're in absolute controller mode?
 
-# GPU vs CPU only?
-
+# TODO: Does everything run faster on CPU or GPU?
 
 # TODO: When saving config JSON, also save env.info() so we can audit environment parameters.
 
@@ -18,6 +19,6 @@
 
 # TODO: Add another metric for logging... nrmse_range versus target output values for (1) base dataset and
 #  (2) controlled output. Pre-select B random batches (~250? see model pkg) and use the same batches for
-#  (1) and (2).
+#  (1) and (2). Are the controls helping us run "tighter"?
 
 
