@@ -135,12 +135,29 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     np.random.seed(seed)
 
     env, test_env = env_fn(), env_fn()
-    obs_dim = env.observation_space.shape[0]
-    act_dim = env.action_space.shape[0]
 
     # DEBUG: cc
-    env.set_batch_trimming(100, 'both')
-    test_env.set_batch_trimming(100, 'both')
+    # env.set_batch_trimming(100, 'both')
+    # test_env.set_batch_trimming(100, 'both')
+    print(colorize('\n\nUpdating environment parameters...\n\n', color='yellow', bold=False))
+    param_dict = {'action_max': 2.5,
+                  'action_min': -2.5,
+                  'obs_max': 3,
+                  'obs_min': -3,
+                  'base_reward': 1,
+                  'rmse_factor': 1,
+                  'reg_factor': 0.1,
+                  'trim_batches_start': 100,
+                  'trim_batches_end': 100,
+                  'controller_mode': 'absolute',
+                  }
+    print(colorize('\t> Training environment:', color='yellow', bold=False))
+    env.update(**param_dict)
+    print(colorize('\n\n\t> Test environment:', color='yellow', bold=False))
+    test_env.update(**param_dict)
+
+    obs_dim = env.observation_space.shape[0]
+    act_dim = env.action_space.shape[0]
 
     # Action limit for clamping: critically, assumes all dimensions share the same bound!
     act_limit = env.action_space.high[0]
