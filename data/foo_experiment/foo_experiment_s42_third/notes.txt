@@ -1,0 +1,9 @@
+third experiment
+
+r = base - rmse - reg
+
+base = 1
+rmse_factor = 2
+reg_factor = 0.5
+
+
