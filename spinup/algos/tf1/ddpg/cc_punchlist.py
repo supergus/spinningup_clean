@@ -4,7 +4,7 @@
 # Evaluate
 # Try another algo? TD3, SAC
 
-# TODO: With controller limits "wide open" we see controller outputs like +/- 32 !!! With nudges like 0.8.
+# TODO: With controller limits "wide open" we see controller outputs like +/- 80 !!! With nudges like 0.8.
 #  How can that be when we're in absolute controller mode?
 
 # TODO: Does everything run faster on CPU or GPU?
@@ -20,5 +20,13 @@
 # TODO: Add another metric for logging... nrmse_range versus target output values for (1) base dataset and
 #  (2) controlled output. Pre-select B random batches (~250? see model pkg) and use the same batches for
 #  (1) and (2). Are the controls helping us run "tighter"?
+
+# TODO: For rewards... instead of rmse over all output_seq_len, how about just over 1st step?
+#  Otherwise you're penalizing the agent for stuff that will happen in the future even though
+#  it's (basically) out of direct agent control. You're also being subjected to the noisy end
+#  of the predicted sequence and any biases it contains.
+
+# TODO: Try training with no action regularization. And wide action limits. Take the gloves off and
+#  see if the policy can make things run tighter... Also eliminate base reward...???? Just go for best rmse
 
 

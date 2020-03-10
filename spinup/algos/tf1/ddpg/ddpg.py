@@ -153,6 +153,11 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     for c in test_env.controllers:
         c.update_parameters(**controller_params)
 
+    print('\n\nInfo for env:')
+    env.info()
+    print('\n\nInfo for test_env:')
+    test_env.info()
+
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
 
@@ -210,8 +215,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     # Setup model saving
     logger.setup_tf_saver(sess, inputs={'x': x_ph, 'a': a_ph}, outputs={'pi': pi, 'q': q})
 
-    def action_to_string(my_action):
-        list_of_strings = [f'{format(elem, ".3f"):>6}' for elem in my_action]
+    def list_of_nums_to_string(my_list):
+        list_of_strings = [f'{format(elem, ".3f"):>6}' for elem in my_list]
         a_str = '[' + ', '.join(list_of_strings) + ']'
         return a_str
 
@@ -224,6 +229,10 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         for j in range(num_test_episodes):
 
             # DEBUG cc
+            print('\n\n')
+            print(colorize('=' * 120, color='blue', bold=True))
+            print(colorize('Start of new epoch\n', color='blue', bold=True))
+
             print(colorize(f'\nj: {j} / {num_test_episodes} test episodes, env.playhead: {env.playhead}',
                            color='gray', bold=True))
 
@@ -239,13 +248,16 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 test_action = get_action(o, 0)
 
                 # DEBUG cc
-                print(colorize(f'\tTaking test action: {action_to_string(test_action)}', color='red', bold=False))
+                print(colorize(f'\tTaking test action: {list_of_nums_to_string(test_action)}',
+                               color='red', bold=False))
 
                 # o, r, d, _ = test_env.step(get_action(o, 0))
                 o, r, d, _ = test_env.step(test_action)
 
                 # DEBUG cc
-                print(f'\ttest_env playhead after step: {test_env.playhead}\n')
+                print(f'\ttest_env playhead after step: {test_env.playhead}')
+                # DEBUG cc
+                print(colorize(f'\tObs from LPP: {list_of_nums_to_string(o)}\n', color='white', bold=False))
 
                 ep_ret += r
                 ep_len += 1
@@ -277,16 +289,19 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         # use the learned policy (with some noise, via act_noise). 
         if t > start_steps:
             a = get_action(o, act_noise)
-            print(colorize(f'\tAction from policy: {action_to_string(a)}', color='white', bold=False))
+            print(colorize(f'\tAction from policy: {list_of_nums_to_string(a)}', color='white', bold=False))
         else:
             a = env.action_space.sample()
-            print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {action_to_string(a)}',
+            print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {list_of_nums_to_string(a)}',
                            color='white', bold=False))
 
         # Step the env
         o2, r, d, _ = env.step(a)
         ep_ret += r
         ep_len += 1
+
+        # DEBUG cc
+        print(colorize(f'\tObs from LPP: {list_of_nums_to_string(o2)}', color='white', bold=False))
 
         # Ignore the "done" signal if it comes from hitting the time
         # horizon (that is, when it's an artificial terminal signal
@@ -371,7 +386,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             # DEBUG cc
             print('')
 
-    return env
+    return env, logger, replay_buffer
 
 
 if __name__ == '__main__':
