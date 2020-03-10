@@ -13,8 +13,8 @@ env_params = {
     'obs_max': 2.0,  # If exceeded, will trigger end of episode when training agent
     'obs_min': -2.0,  # If exceeded, will trigger end of episode when training agent
     'seed_value': 42,
-    'base_reward': 1.0,
-    'reg_factor': 0.5,
+    'base_reward': 0,
+    'reg_factor': 0,
     'rmse_factor': 2.0,
     'controller_mode': 'absolute',  # {'incremental', 'absolute'}
     'data_mode': 'all',  # {'all', 'train', 'test', 'val'}
