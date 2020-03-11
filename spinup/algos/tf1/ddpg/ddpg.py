@@ -14,6 +14,7 @@ class ReplayBuffer:
     """
 
     def __init__(self, obs_dim, act_dim, size):
+        self.raw_outs_buf = np.zeros([size, obs_dim], dtype=np.float32)
         self.obs1_buf = np.zeros([size, obs_dim], dtype=np.float32)
         self.obs2_buf = np.zeros([size, obs_dim], dtype=np.float32)
         self.acts_buf = np.zeros([size, act_dim], dtype=np.float32)
@@ -21,7 +22,8 @@ class ReplayBuffer:
         self.done_buf = np.zeros(size, dtype=np.float32)
         self.ptr, self.size, self.max_size = 0, 0, size
 
-    def store(self, obs, act, rew, next_obs, done):
+    def store(self, raw, obs, act, rew, next_obs, done):
+        self.raw_outs_buf[self.ptr] = raw
         self.obs1_buf[self.ptr] = obs
         self.obs2_buf[self.ptr] = next_obs
         self.acts_buf[self.ptr] = act
@@ -32,7 +34,8 @@ class ReplayBuffer:
 
     def sample_batch(self, batch_size=32):
         idxs = np.random.randint(0, self.size, size=batch_size)
-        return dict(obs1=self.obs1_buf[idxs],
+        return dict(raw=self.raw_outs_buf[idxs],
+                    obs1=self.obs1_buf[idxs],
                     obs2=self.obs2_buf[idxs],
                     acts=self.acts_buf[idxs],
                     rews=self.rews_buf[idxs],
@@ -308,8 +311,12 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         # that isn't based on the agent's state)
         d = False if ep_len == max_ep_len else d
 
+        # Get raw output from underlying experimental data (not modified with controls)
+        # and store in replay buffer for easy comparison to controlled outputs
+        raw = env.dataset_outputs[env.playhead]
+
         # Store experience to replay buffer
-        replay_buffer.store(o, a, r, o2, d)
+        replay_buffer.store(raw, o, a, r, o2, d)
 
         # Super critical, easy to overlook step: make sure to update 
         # most recent observation!
