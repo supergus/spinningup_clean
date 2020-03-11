@@ -1,11 +1,13 @@
 import gym
 import liveline_gym
 import numpy as np
-
 from spinup.algos.tf1.ddpg.ddpg import ddpg
 from spinup.algos.tf1.ddpg import core
-
 from spinup.utils.run_utils import setup_logger_kwargs
+
+# Disable GPU
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 env_params = {
     'action_max': 3.0,  # Agent policy will be clipped by training script

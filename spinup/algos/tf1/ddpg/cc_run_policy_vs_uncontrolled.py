@@ -5,6 +5,10 @@ import liveline_gym
 import numpy as np
 from seq2seq.utils.misc import rmse
 
+# Disable GPU
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 # Load saved environment and trained agent
 p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42'
 env, get_action = load_policy_and_env(p)
@@ -74,16 +78,16 @@ for b, input_batch in enumerate(env.dataset_inputs):
 
     # Handle 'done' from env so we can keep on stepping
     env.returns['done'] = False if d else env.returns['done']
-    if b > 1000: break
+    # if b > 50: break
 
 # Convert to Numpy
 raw_array = np.array(raw_array, dtype=o.dtype)
 ctl_array = np.array(ctl_array, dtype=o.dtype)
 tgt_array = np.array(tgt_array, dtype=o.dtype)
 
-# RMSE
-rmse_raw = rmse(raw_array, tgt_array)
-rmse_controlled = rmse(ctl_array, tgt_array)
+# Normalized RMSE (range)
+rmse_raw = rmse(raw_array, tgt_array) / (raw_array.max() - raw_array.min())
+rmse_controlled = rmse(ctl_array, tgt_array) / (raw_array.max() - raw_array.min())
 
 
 # x = run_policy(env, get_action, render=False, max_ep_len=1000, num_episodes=10)
