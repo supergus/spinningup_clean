@@ -1,6 +1,6 @@
 *.*~
 __pycache__/
-*.pkl
+vars.pkl
 # data/
 **/*.egg-info
 .python-version
