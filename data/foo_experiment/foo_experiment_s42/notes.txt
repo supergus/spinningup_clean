@@ -1,0 +1,3 @@
+4th experiment was only using rmse in reward, no base value, no regularization.
+Controllers VERY active (but effective!).
+This time, try to calm them down with some regularization = 0.5

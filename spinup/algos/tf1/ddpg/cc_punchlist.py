@@ -28,3 +28,5 @@
 
 # TODO: Try training with no action regularization. And wide action limits. Take the gloves off and
 #  see if the policy can make things run tighter... Also eliminate base reward...???? Just go for best rmse
+
+# TODO: Add to LPP: etl_history and scalers and PCAs. Want to de-scale Actions and Obs.

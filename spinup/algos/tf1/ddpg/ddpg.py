@@ -316,7 +316,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         raw = env.dataset_outputs[env.playhead]
 
         # Store experience to replay buffer
-        replay_buffer.store(raw, o, a, r, o2, d)
+        replay_buffer.store(raw[0], o, a, r, o2, d)
 
         # Super critical, easy to overlook step: make sure to update 
         # most recent observation!
