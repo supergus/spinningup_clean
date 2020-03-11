@@ -1,3 +1,6 @@
 4th experiment was only using rmse in reward, no base value, no regularization.
 Controllers VERY active (but effective!).
 This time, try to calm them down with some regularization = 0.5
+
+Next: Add some base reward. Agent is learning to perform well with short episodes... we
+want policies that "run smoothy" for some time into the future...
