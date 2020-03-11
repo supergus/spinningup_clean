@@ -78,7 +78,10 @@ for b, input_batch in enumerate(env.dataset_inputs):
 
     # Handle 'done' from env so we can keep on stepping
     env.returns['done'] = False if d else env.returns['done']
+
     # if b > 50: break
+
+    # NOTE: Playhead will wrap around if there is end trimming, as we've enumerated len of the dataset.
 
 # Convert to Numpy
 raw_array = np.array(raw_array, dtype=o.dtype)
