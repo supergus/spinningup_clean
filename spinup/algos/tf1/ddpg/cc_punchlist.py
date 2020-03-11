@@ -30,3 +30,7 @@
 #  see if the policy can make things run tighter... Also eliminate base reward...???? Just go for best rmse
 
 # TODO: Add to LPP: etl_history and scalers and PCAs. Want to de-scale Actions and Obs.
+
+# TODO: Make pass-through mode for controllers... so we can turn them on/off individually. What will the
+#  policy agent learn if one of it's actions has no effect on the world...? Better regularize the actions
+#  so it gets a penalty for "firing" the disabled controller with no possible reward...

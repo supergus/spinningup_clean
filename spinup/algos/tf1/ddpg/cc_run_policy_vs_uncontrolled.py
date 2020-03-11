@@ -12,7 +12,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
-p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42'
+p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42_5'
 env, get_action = load_policy_and_env(p)
 
 # Kill this later with refactored gym
@@ -220,12 +220,16 @@ plt.show()
 
 
 # ============================================================================
-# Quick and dirty plotting: Controller input sigs, De-scaled (assumes StandardScaler)
+# Quick and dirty plotting: Controller raw input sigs, De-scaled (assumes StandardScaler)
 # ============================================================================
 
 # Descale and select inputs
 inputs = env.lpp.data.transformed.inputs.to_numpy()
 inputs_descaled = (inputs[:, idx_list] * s_inputs) + u_inputs
+
+delta_len = len(inputs_descaled) - len(act_array_descaled)
+
+inputs_descaled_w_nudge = inputs_descaled[:-delta_len] + act_array_descaled
 
 # Descaled inputs
 for idx in range(inputs_descaled.shape[1]):
@@ -233,7 +237,9 @@ for idx in range(inputs_descaled.shape[1]):
     c = color_cycle[idx % len(color_cycle)]
     plt.plot(x, inputs_descaled[:len(x), idx],
              color=c, linestyle='solid', linewidth=1.0, label=f'Extruder {idx}', alpha=1.0)
-plt.title(f'Raw Inputs - Descaled')
+    plt.plot(x, inputs_descaled_w_nudge[:len(x), idx],
+             color=c, linestyle='solid', linewidth=1.0, alpha=0.5)
+plt.title(f'Extruder RPM Settings\n(Solid = Experiment, Shaded = AI)')
 plt.xlabel('Time [s]')
 plt.ylabel('RPM')
 plt.legend()
@@ -253,4 +259,4 @@ del act_array, act_array_descaled, act_array_descaled_ma, act_ma
 del inputs, inputs_descaled, out_sig_names, pts, s_inputs, u_inputs
 del extruder_1_rpm_mean, extruder_2_rpm_mean, extruder_4_rpm_mean
 del extruder_1_rpm_std, extruder_2_rpm_std, extruder_4_rpm_std
-del ctl_array, raw_array, tgt_array, sig_name
+del ctl_array, raw_array, tgt_array, sig_name, delta_len
