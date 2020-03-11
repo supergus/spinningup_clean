@@ -233,7 +233,9 @@ for idx in range(inputs_descaled.shape[1]):
     c = color_cycle[idx % len(color_cycle)]
     plt.plot(x, inputs_descaled[:len(x), idx],
              color=c, linestyle='solid', linewidth=1.0, label=f'Extruder {idx}', alpha=1.0)
-plt.title(f'Actions - Descaled')
+plt.title(f'Raw Inputs - Descaled')
+plt.xlabel('Time [s]')
+plt.ylabel('RPM')
 plt.legend()
 plt.show()
 
@@ -246,4 +248,9 @@ plt.close('all')
 # x = run_policy(env, get_action, render=False, max_ep_len=1000, num_episodes=10)
 del a, all_n, all_y, b, d, input_batch, my_str, o, p, r, raw_out, tgts
 del c, color_cycle, idx, x, window
-# del i, idx_list, all_input_sig_names
+del i, idx_list, all_input_sig_names
+del act_array, act_array_descaled, act_array_descaled_ma, act_ma
+del inputs, inputs_descaled, out_sig_names, pts, s_inputs, u_inputs
+del extruder_1_rpm_mean, extruder_2_rpm_mean, extruder_4_rpm_mean
+del extruder_1_rpm_std, extruder_2_rpm_std, extruder_4_rpm_std
+del ctl_array, raw_array, tgt_array, sig_name
