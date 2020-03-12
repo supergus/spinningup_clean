@@ -4,11 +4,9 @@ import numpy as np
 from spinup.algos.tf1.ddpg.ddpg import ddpg
 from spinup.algos.tf1.ddpg import core
 from spinup.utils.run_utils import setup_logger_kwargs
-import tensorflow as tf
 
 # Disable GPU
 import os
-
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 env_params = {
@@ -17,7 +15,7 @@ env_params = {
     'obs_max': 2.0,  # If exceeded, will trigger end of episode when training agent
     'obs_min': -2.0,  # If exceeded, will trigger end of episode when training agent
     'seed_value': 42,
-    'base_reward': 0,
+    'base_reward': 1,
     'reg_factor': 0.5,
     'rmse_factor': 2.0,
     'controller_mode': 'absolute',  # {'incremental', 'absolute'}

@@ -1,11 +1,8 @@
-from spinup.utils.test_policy import load_policy_and_env, run_policy
+from spinup.utils.test_policy import load_policy_and_env
 from spinup.utils.logx import colorize
-import gym
-import liveline_gym
 import numpy as np
 from seq2seq.utils.misc import rmse
 from matplotlib import pyplot as plt
-from copy import deepcopy
 
 # Disable GPU
 import os
