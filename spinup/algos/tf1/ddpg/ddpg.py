@@ -298,6 +298,16 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {list_of_nums_to_string(a)}',
                            color='white', bold=False))
 
+        # TODO: An ugly hack to test using convolution of experimental outputs as setpoints. Build a method.
+        batch_window = 500
+        if env.playhead - batch_window >= env.trim_batches_start:
+            first_batch = (env.playhead - batch_window)
+        else:
+            first_batch = env.trim_batches_start
+        new_setpoints = env.dataset_outputs[first_batch:env.playhead, 0, :].mean(axis=0)
+        for i, key in enumerate(list(env.lpp.data.output_setpoints)):
+            env.lpp.data.output_setpoints[key] = new_setpoints[i]
+
         # Step the env
         o2, r, d, _ = env.step(a)
         ep_ret += r
