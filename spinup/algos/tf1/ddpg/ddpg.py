@@ -393,6 +393,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             # DEBUG cc
             print('')
 
+    sess.close()
+
     return env, logger, replay_buffer
 
 

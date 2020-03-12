@@ -259,4 +259,4 @@ del act_array, act_array_descaled, act_array_descaled_ma, act_ma
 del inputs, inputs_descaled, out_sig_names, pts, s_inputs, u_inputs
 del extruder_1_rpm_mean, extruder_2_rpm_mean, extruder_4_rpm_mean
 del extruder_1_rpm_std, extruder_2_rpm_std, extruder_4_rpm_std
-del ctl_array, raw_array, tgt_array, sig_name, delta_len
+del ctl_array, raw_array, tgt_array, sig_name, delta_len, inputs_descaled_w_nudge
