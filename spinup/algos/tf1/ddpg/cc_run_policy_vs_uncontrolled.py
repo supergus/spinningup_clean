@@ -9,12 +9,12 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
-p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42_5'
+p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42'
 env, get_action = load_policy_and_env(p)
 
-# Kill this later with refactored gym
-env.dataset_inputs = env.dataset_inputs
-env.dataset_outputs = env.lpp.data.batches.output_batches_overlapping
+# # Kill this later with refactored gym
+# env.dataset_inputs = env.dataset_inputs
+# env.dataset_outputs = env.lpp.data.batches.output_batches_overlapping
 
 # Reset environment and get target values for controlled outputs
 o = env.reset(playhead=env.trim_batches_start)
