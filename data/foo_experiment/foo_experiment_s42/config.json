@@ -20,11 +20,11 @@
         "output_lim_min":	-Infinity,
         "verbosity":	2
     },
-    "env_fn":	"<function <lambda> at 0x00000206161D25E8>",
+    "env_fn":	"<function <lambda> at 0x0000020A51AB95E8>",
     "env_params":	{
         "action_max":	3.0,
         "action_min":	-3.0,
-        "base_reward":	0,
+        "base_reward":	1,
         "controller_mode":	"absolute",
         "data_mode":	"all",
         "obs_max":	2.0,
@@ -38,38 +38,38 @@
         "trim_batches_start":	100,
         "verbosity":	2
     },
-    "epochs":	3,
-    "exp_name":	"foo_experiment_A",
+    "epochs":	50,
+    "exp_name":	"foo_experiment",
     "gamma":	0.99,
     "logger":	{
-        "<spinup.utils.logx.EpochLogger object at 0x0000020615FD9708>":	{
+        "<spinup.utils.logx.EpochLogger object at 0x0000020A51AED8C8>":	{
             "epoch_dict":	{},
-            "exp_name":	"foo_experiment_A",
+            "exp_name":	"foo_experiment",
             "first_row":	true,
             "log_current_row":	{},
             "log_headers":	[],
-            "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\foo_experiment_A\\foo_experiment_A_s42",
+            "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\foo_experiment\\foo_experiment_s42",
             "output_file":	{
-                "<_io.TextIOWrapper name='D:\\\\chris\\\\Documents\\\\Programming\\\\liveline_repos\\\\ll_spinningup_clean\\\\data\\\\foo_experiment_A\\\\foo_experiment_A_s42\\\\progress.txt' mode='w' encoding='cp1252'>":	{
+                "<_io.TextIOWrapper name='D:\\\\chris\\\\Documents\\\\Programming\\\\liveline_repos\\\\ll_spinningup_clean\\\\data\\\\foo_experiment\\\\foo_experiment_s42\\\\progress.txt' mode='w' encoding='cp1252'>":	{
                     "mode":	"w"
                 }
             }
         }
     },
     "logger_kwargs":	{
-        "exp_name":	"foo_experiment_A",
-        "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\foo_experiment_A\\foo_experiment_A_s42"
+        "exp_name":	"foo_experiment",
+        "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\foo_experiment\\foo_experiment_s42"
     },
-    "max_ep_len":	10,
-    "num_test_episodes":	2,
+    "max_ep_len":	1000,
+    "num_test_episodes":	10,
     "pi_lr":	0.001,
     "polyak":	0.995,
     "q_lr":	0.001,
     "replay_size":	1000000,
     "save_freq":	1,
     "seed":	42,
-    "start_steps":	20,
-    "steps_per_epoch":	40,
-    "update_after":	10,
-    "update_every":	5
+    "start_steps":	10000,
+    "steps_per_epoch":	4000,
+    "update_after":	1000,
+    "update_every":	50
 }
