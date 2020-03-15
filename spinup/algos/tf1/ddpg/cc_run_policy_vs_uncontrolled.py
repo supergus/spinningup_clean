@@ -47,7 +47,7 @@ def image_saver(fig, tgt):
     fig.savefig(tgt,
                 facecolor=fig.get_facecolor(),
                 edgecolor=fig.get_edgecolor(),
-                dpi=300,
+                dpi=150,
                 transparent=False,
                 )
     return
