@@ -6,6 +6,7 @@ from spinup.algos.tf1.ddpg import core
 from spinup.algos.tf1.ddpg.core import get_vars
 from spinup.utils.logx import EpochLogger
 from spinup.utils.logx import colorize
+import copy
 
 
 class ReplayBuffer:
@@ -133,8 +134,6 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         controller_params (dict): Controller settings.
     """
 
-    # TODO: Didn't I have to reshape or rescale policy outputs last time?
-
     logger = EpochLogger(**logger_kwargs)
     logger.save_config(locals())
 
@@ -218,6 +217,19 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     # Setup model saving
     logger.setup_tf_saver(sess, inputs={'x': x_ph, 'a': a_ph}, outputs={'pi': pi, 'q': q})
 
+    def rolling_setpoints(my_env, batch_window=500):
+        v = copy.copy(my_env.verbosity)
+        my_env.verbosity = 0
+        if my_env.playhead - batch_window >= my_env.trim_batches_start:
+            first_batch = (my_env.playhead - batch_window)
+        else:
+            first_batch = my_env.trim_batches_start
+        new_setpoints = my_env.dataset_outputs[first_batch:my_env.playhead, 0, :].mean(axis=0)
+        my_env.set_output_targets(list(new_setpoints))
+        print(colorize(f'\tNew setpoints: {list_of_nums_to_string(new_setpoints)}', color='magenta', bold=False))
+        my_env.verbosity = v
+        return
+
     def list_of_nums_to_string(my_list):
         list_of_strings = [f'{format(elem, ".3f"):>6}' for elem in my_list]
         a_str = '[' + ', '.join(list_of_strings) + ']'
@@ -234,18 +246,37 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             # DEBUG cc
             print('\n\n')
             print(colorize('=' * 120, color='blue', bold=True))
-            print(colorize('Start of new epoch\n', color='blue', bold=True))
+            print(colorize('Start of new test episode\n', color='blue', bold=True))
 
             print(colorize(f'\nj: {j} / {num_test_episodes} test episodes, env.playhead: {env.playhead}',
                            color='gray', bold=True))
 
+            # DEBUG
+            print(f'\tResetting test_env...')
+
             o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
+
+            print(f'\tObs at reset j({j}): {list_of_nums_to_string(o)}\n')
+
+
+            # DEBUG
+            if list_of_nums_to_string(o).find('nan') != -1:
+                test_env.last_obs_before_oopsie = o
+                print('\n\nOOPSIE! at test reset\n\n')
+                # exit()
+            print(f'\tobs: {list_of_nums_to_string(o)}')
 
             while not (d or (ep_len == max_ep_len)):
                 # DEBUG cc
                 print(colorize(f'Test rollout step: {ep_len} (of max {max_ep_len}), '
                                f'epoch: {j} (of {num_test_episodes})',
                                color='gray', bold=True))
+
+                # TODO: Needed?
+                # rolling_setpoints(test_env)
+
+                # DEBUG
+                print(f'\tSetpoints: {list_of_nums_to_string(list(test_env.lpp.data.output_setpoints.values()))}')
 
                 # Take deterministic actions at test time (noise_scale=0)
                 test_action = get_action(o, 0)
@@ -258,6 +289,10 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 o, r, d, _ = test_env.step(test_action)
 
                 # DEBUG cc
+                if list_of_nums_to_string(o).find('nan') != -1:
+                    test_env.last_obs_before_oopsie = o
+                    print('\n\nOOPSIE at test step!\n\n')
+                    # exit()
                 print(f'\ttest_env playhead after step: {test_env.playhead}')
                 # DEBUG cc
                 print(colorize(f'\tObs from LPP: {list_of_nums_to_string(o)}\n', color='white', bold=False))
@@ -298,15 +333,8 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             print(colorize(f'\tRandomly sampled action (t <= {start_steps}): {list_of_nums_to_string(a)}',
                            color='white', bold=False))
 
-        # TODO: An ugly hack to test using convolution of experimental outputs as setpoints. Build a method.
-        batch_window = 500
-        if env.playhead - batch_window >= env.trim_batches_start:
-            first_batch = (env.playhead - batch_window)
-        else:
-            first_batch = env.trim_batches_start
-        new_setpoints = env.dataset_outputs[first_batch:env.playhead, 0, :].mean(axis=0)
-        for i, key in enumerate(list(env.lpp.data.output_setpoints)):
-            env.lpp.data.output_setpoints[key] = new_setpoints[i]
+        # TODO: An ugly hack to test using convolution of experimental outputs as setpoints. Needed?
+        # rolling_setpoints(env)
 
         # Step the env
         o2, r, d, _ = env.step(a)
@@ -331,6 +359,12 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         # Super critical, easy to overlook step: make sure to update 
         # most recent observation!
         o = o2
+
+        # DEBUG cc
+        if list_of_nums_to_string(o).find('nan') != -1:
+            env.last_obs_before_oopsie = o
+            print('\n\nOOPSIE at train step!\n\n')
+            # exit()
 
         # End of trajectory handling
         if d or (ep_len == max_ep_len):

@@ -9,21 +9,27 @@ from spinup.utils.run_utils import setup_logger_kwargs
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
+# Make TF shut up
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+from seq2seq.utils import tf_helpers
+tf_helpers.tf_verbosity_handler()
+
+
 env_params = {
     'action_max': 3.0,  # Agent policy will be clipped by training script
     'action_min': -3.0,  # Agent policy will be clipped by training script
     'obs_max': 2.0,  # If exceeded, will trigger end of episode when training agent
     'obs_min': -2.0,  # If exceeded, will trigger end of episode when training agent
     'seed_value': 42,
-    'base_reward': 0.0,
-    'reg_factor': 0.5,
-    'rmse_factor': 2.0,
+    'base_reward': 0.0,  # 1.0
+    'reg_factor': 0.0,   # 0.5
+    'rmse_factor': 2.0,  # 2.0
     'controller_mode': 'absolute',  # {'incremental', 'absolute'}
     'data_mode': 'all',  # {'all', 'train', 'test', 'val'}
     'step_index_mode': 'sequential',  # {'sequential', 'random'}
     'reset_index_mode': 'random',  # {'zero', 'random'}
     'verbosity': 2,  # [0, 1, 2];   0: Silent; 1: Warnings only; 2: Full verbosity
-    'trim_batches_start': 100,
+    'trim_batches_start': 200,
     'trim_batches_end': 100,
 }
 
@@ -51,7 +57,7 @@ env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=
                                   # max_ep_len=10, num_test_episodes=2,
 
                                   # TRAINING
-                                  steps_per_epoch=4000, epochs=50, start_steps=10000, update_after=1000,
+                                  steps_per_epoch=4000, epochs=100, start_steps=25000, update_after=1000,
                                   update_every=50,
                                   max_ep_len=1000, num_test_episodes=10,  # more test eps? 20? More start_steps?
 

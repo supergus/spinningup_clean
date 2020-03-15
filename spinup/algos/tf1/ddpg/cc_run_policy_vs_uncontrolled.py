@@ -9,7 +9,7 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
-p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42'
+p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42_NEW_0'
 env, get_action = load_policy_and_env(p)
 
 # # Kill this later with refactored gym
