@@ -47,10 +47,10 @@ controller_params = {
     'verbosity': 2,  # [0, 1, 2]; 1: Warnings only; 2: Full verbosity
 }
 
-logger_kwargs = setup_logger_kwargs('NEW')
+logger_kwargs = setup_logger_kwargs('NEW_5')
 
 env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=core.mlp_actor_critic,
-                                  ac_kwargs=dict(hidden_sizes=[16] * 2),
+                                  ac_kwargs=dict(hidden_sizes=[256] * 3),
                                   gamma=0.99, seed=42,
 
                                   # # FOR QUICK TESTS

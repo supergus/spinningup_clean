@@ -69,11 +69,20 @@ NEW_6:
     hidden_sizes: 256 x 3
     controller_mode: 'absolute'
 
+NEW_7:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'absolute'
+
 =================================================================
 INCREMENTAL CONTROLLER MODE
 =================================================================
 
-NEW_7:
+NEW_8:
     base_rew: 0
     rmse_factor: 2
     reg_factor: 0
@@ -86,6 +95,7 @@ NEW_7:
 
 also train for 1 or two touches, then plot response of that "untrained" policy.
 how different from "trained"?
+or just use purely random "policy"...
 
 
 For test episodes: always start at same playhead? Not random? And if "done" then just keep going?
