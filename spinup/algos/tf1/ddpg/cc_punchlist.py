@@ -45,3 +45,8 @@
 
 # TODO: Make step response plots. Draw x batches randomly. Log un-nudged outputs.
 #  Put controllers in absolute mode. For each controller: Add a nudge, log outputs, with no nudge on other sigs
+
+# TODO: For test episodes: Force test_env into reset mode with specified playhead location.
+#  Start with trimming_start batch, roll forward. If episode ends, start next episode at next batch.
+#  This may give a better look at how "far" the policy can get us through the same data on each test.
+#  Increase test episodes so we get most of the way through the data.
