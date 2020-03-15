@@ -17,15 +17,15 @@ tf_helpers.tf_verbosity_handler()
 
 
 env_params = {
-    'action_max': 3.0,  # Agent policy will be clipped by training script
-    'action_min': -3.0,  # Agent policy will be clipped by training script
+    'action_max': 0.1,  # Agent policy will be clipped by training script
+    'action_min': -0.1,  # Agent policy will be clipped by training script
     'obs_max': 2.0,  # If exceeded, will trigger end of episode when training agent
     'obs_min': -2.0,  # If exceeded, will trigger end of episode when training agent
     'seed_value': 42,
     'base_reward': 0.0,  # 1.0
     'reg_factor': 0.0,   # 0.5
     'rmse_factor': 2.0,  # 2.0
-    'controller_mode': 'absolute',  # {'incremental', 'absolute'}
+    'controller_mode': 'incremental',  # {'incremental', 'absolute'}
     'data_mode': 'all',  # {'all', 'train', 'test', 'val'}
     'step_index_mode': 'sequential',  # {'sequential', 'random'}
     'reset_index_mode': 'random',  # {'zero', 'random'}
@@ -43,7 +43,7 @@ controller_params = {
     'nudge_lim_min': np.NINF,  # -5.0
     'nudge_delta_max': np.inf,  # 20.0
     'nudge_delta_min': np.NINF,  # -20.0
-    'controller_mode': 'absolute',
+    'controller_mode': 'incremental',
     'verbosity': 2,  # [0, 1, 2]; 1: Warnings only; 2: Full verbosity
 }
 

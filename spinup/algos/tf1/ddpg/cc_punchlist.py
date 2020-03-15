@@ -42,3 +42,6 @@
 
 # TODO: Run with untrained agent or random action generator.
 #  So far we never see agents giving a totally WORSE result when running comparisons; why? how?
+
+# TODO: Make step response plots. Draw x batches randomly. Log un-nudged outputs.
+#  Put controllers in absolute mode. For each controller: Add a nudge, log outputs, with no nudge on other sigs

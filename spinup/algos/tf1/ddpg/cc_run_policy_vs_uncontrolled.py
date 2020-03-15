@@ -12,15 +12,8 @@ import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
-# p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment'
 p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\NEW')
-# assert misc.check_target_existence(p), 'Load path is not a valid directory'
 env, get_action = load_policy_and_env(p)
-
-# Save path
-# p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment')
-p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\NEW')
-# assert misc.check_target_existence(p), 'Save path is not a valid directory'
 
 # Reset environment and get target values for controlled outputs
 o = env.reset(playhead=env.trim_batches_start)
@@ -74,11 +67,12 @@ def improved(raw, obs, tgts):
     return improved_str, all_yes, all_no
 
 
-for b, input_batch in enumerate(env.dataset_inputs):
+# TODO: Not quite right. Below we log raw_outs from untrimmed batch idx 0, while playhead starts on trimmed
+for b, input_batch in enumerate(env.dataset_inputs):    # TODO: Use range(start_trim, len(dataset) - end_trim, 1)
     print(f'batch: {b}\tplayhead: {env.playhead}')
     a = get_action(o)
     o, r, d, _ = env.step(a)
-    raw_out = env.dataset_outputs[b][0]
+    raw_out = env.dataset_outputs[b][0]     # TODO: should be = env.dataset_outputs[env.playhead][0]
 
     # Log results
     raw_array.append(raw_out)
@@ -101,8 +95,6 @@ for b, input_batch in enumerate(env.dataset_inputs):
 
     # Handle 'done' from env so we can keep on stepping
     env.returns['done'] = False if d else env.returns['done']
-
-    # if b > 50: break
 
     # NOTE: Playhead will wrap around if there is end trimming, as we've enumerated len of the dataset.
 
