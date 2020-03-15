@@ -93,6 +93,10 @@ NEW_8:
     action_min = -0.1
     action_max = 0.1
 
+NEW_9:
+    regularize? but do it on NUDGE not the ACTIONS.
+
+
 also train for 1 or two touches, then plot response of that "untrained" policy.
 how different from "trained"?
 or just use purely random "policy"...
