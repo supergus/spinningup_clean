@@ -13,16 +13,14 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
 p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment'
+p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\NEW_2')
 # assert misc.check_target_existence(p), 'Load path is not a valid directory'
 env, get_action = load_policy_and_env(p)
 
 # Save path
 p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment')
+p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\NEW_2')
 # assert misc.check_target_existence(p), 'Save path is not a valid directory'
-
-# # Kill this later with refactored gym
-# env.dataset_inputs = env.dataset_inputs
-# env.dataset_outputs = env.lpp.data.batches.output_batches_overlapping
 
 # Reset environment and get target values for controlled outputs
 o = env.reset(playhead=env.trim_batches_start)

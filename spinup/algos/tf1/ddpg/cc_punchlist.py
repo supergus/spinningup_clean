@@ -39,3 +39,6 @@
 #  large RPM adjustments, but slowly over time
 
 # TODO: Make agent dumber or smarter? More or less memory units?
+
+# TODO: Run with untrained agent or random action generator.
+#  So far we never see agents giving a totally WORSE result when running comparisons; why? how?

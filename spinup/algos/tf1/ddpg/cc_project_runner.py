@@ -4,6 +4,7 @@ import numpy as np
 from spinup.algos.tf1.ddpg.ddpg import ddpg
 from spinup.algos.tf1.ddpg import core
 from spinup.utils.run_utils import setup_logger_kwargs
+from pathlib import Path
 
 # Disable GPU
 import os
@@ -46,10 +47,10 @@ controller_params = {
     'verbosity': 2,  # [0, 1, 2]; 1: Warnings only; 2: Full verbosity
 }
 
-logger_kwargs = setup_logger_kwargs('current_experiment')
+logger_kwargs = setup_logger_kwargs('NEW')
 
 env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=core.mlp_actor_critic,
-                                  ac_kwargs=dict(hidden_sizes=[64] * 2),
+                                  ac_kwargs=dict(hidden_sizes=[16] * 2),
                                   gamma=0.99, seed=42,
 
                                   # # FOR QUICK TESTS
@@ -70,3 +71,9 @@ env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=
                                   controller_params=controller_params,
 
                                   logger_kwargs=logger_kwargs)
+
+
+p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\spinup\algos\tf1\ddpg')
+f = 'cc_run_policy_vs_uncontrolled.py'
+t = p / f
+exec(open(t).read())
