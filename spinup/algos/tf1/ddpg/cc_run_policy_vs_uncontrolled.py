@@ -1,16 +1,24 @@
+import numpy as np
+import re
+from matplotlib import pyplot as plt
+from pathlib import Path
 from spinup.utils.test_policy import load_policy_and_env
 from spinup.utils.logx import colorize
-import numpy as np
-from seq2seq.utils.misc import rmse
-from matplotlib import pyplot as plt
+from seq2seq.utils import misc
 
 # Disable GPU
 import os
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Load saved environment and trained agent
-p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\foo_experiment\foo_experiment_s42_NEW_0'
+p = r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment'
+# assert misc.check_target_existence(p), 'Load path is not a valid directory'
 env, get_action = load_policy_and_env(p)
+
+# Save path
+p = Path(r'D:\chris\Documents\Programming\liveline_repos\ll_spinningup_clean\data\current_experiment')
+# assert misc.check_target_existence(p), 'Save path is not a valid directory'
 
 # # Kill this later with refactored gym
 # env.dataset_inputs = env.dataset_inputs
@@ -27,8 +35,24 @@ tgt_array = list()
 act_array = list()
 
 # Console
-print(colorize('\n\n' + '='*80, color='magenta', bold=False))
+print(colorize('\n\n' + '=' * 80, color='magenta', bold=False))
 print(colorize('STARTING RUN\n', color='magenta', bold=False))
+
+
+def image_saver(fig, tgt):
+    """Saves plot figure as an image file.
+
+    Arguments:
+        fig (obj): A Matplotlib plot figure
+        tgt (str): A valid save path
+    """
+    fig.savefig(tgt,
+                facecolor=fig.get_facecolor(),
+                edgecolor=fig.get_edgecolor(),
+                dpi=300,
+                transparent=False,
+                )
+    return
 
 
 def list_of_nums_to_string(my_list):
@@ -91,9 +115,16 @@ tgt_array = np.array(tgt_array, dtype=o.dtype)
 act_array = np.array(act_array, dtype=o.dtype)
 
 # Normalized RMSE (range)
-rmse_raw = rmse(raw_array, tgt_array) / (raw_array.max() - raw_array.min())
-rmse_controlled = rmse(ctl_array, tgt_array) / (raw_array.max() - raw_array.min())
+rmse_raw = misc.rmse(raw_array, tgt_array) / (raw_array.max() - raw_array.min())
+rmse_controlled = misc.rmse(ctl_array, tgt_array) / (raw_array.max() - raw_array.min())
 
+# Save RMSE stats
+f = 'rmse_stats.txt'
+t = p / f
+with open(t, 'w') as text_file:
+    print('Normalized RMSE comparison (nrmse_range) versus output targets:', file=text_file)
+    print(f'Uncontrolled: {rmse_raw}', file=text_file)
+    print(f'Controlled:   {rmse_controlled}', file=text_file)
 
 # ============================================================================
 # Quick and dirty plotting: Output Sigs
@@ -112,6 +143,7 @@ plt.close('all')
 for idx, sig_name in enumerate(out_sig_names):
     # Color choice index
     c = color_cycle[idx % len(color_cycle)]
+    fig = plt.figure(figsize=(8, 4.5))
     plt.plot(x, raw_array[:, idx], color=c, linestyle='solid', linewidth=1.0, label='Uncontrolled', alpha=1.0)
     plt.plot(x, ctl_array[:, idx], color=c, linestyle='solid', linewidth=0.5, label='Controlled', alpha=0.50)
     plt.title(f'{sig_name}')
@@ -119,6 +151,13 @@ for idx, sig_name in enumerate(out_sig_names):
     plt.ylabel('Std Dev')
     plt.legend()
     plt.show()
+
+    output_num = str([int(s) for s in re.findall(r'\d+', sig_name)][0])
+    f = f'output_{output_num}' + '.png'
+    t = p / f
+    image_saver(fig, t)
+
+    plt.close('all')
 
 # ============================================================================
 # Quick and dirty plotting: Controller actions, raw
@@ -128,19 +167,21 @@ for idx, sig_name in enumerate(out_sig_names):
 for idx in range(act_array.shape[1]):
     # Color choice index
     c = color_cycle[idx % len(color_cycle)]
-    plt.plot(x[0:2000], act_array[0:2000, idx], color=c, linestyle='solid', linewidth=1.0, label=f'Action {idx}', alpha=1.0)
+    plt.plot(x[0:2000], act_array[0:2000, idx], color=c, linestyle='solid', linewidth=1.0, label=f'Action {idx}',
+             alpha=1.0)
 plt.title(f'Actions')
 plt.xlabel('Time [s]')
 plt.ylabel('Std Dev')
 plt.legend()
 plt.show()
+plt.close('all')
 
 
 # ============================================================================
 # Quick and dirty plotting: Controller actions, moving avg
 # ============================================================================
 
-def moving_average(a, n=3) :
+def moving_average(a, n=3):
     ret = np.cumsum(a, dtype=float)
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
@@ -149,8 +190,7 @@ def moving_average(a, n=3) :
 window = 50
 act_ma = np.zeros_like(act_array)
 for idx in range(act_array.shape[1]):
-    act_ma[window-1:, idx] = moving_average(act_array[:, idx], n=window)
-
+    act_ma[window - 1:, idx] = moving_average(act_array[:, idx], n=window)
 
 # Controller actions, smoothed
 for idx in range(act_ma.shape[1]):
@@ -163,7 +203,7 @@ plt.xlabel('Time [s]')
 plt.ylabel('Std Dev')
 plt.legend()
 plt.show()
-
+plt.close('all')
 
 # ============================================================================
 # Quick and dirty plotting: Controller actions, De-scaled (assumes StandardScaler)
@@ -198,9 +238,10 @@ s_inputs = np.array([extruder_1_rpm_std, extruder_2_rpm_std, extruder_4_rpm_std]
 act_array_descaled = (act_array * s_inputs) + 0
 act_array_descaled_ma = np.zeros_like(act_array_descaled)
 for idx in range(act_array_descaled.shape[1]):
-    act_array_descaled_ma[window-1:, idx] = moving_average(act_array_descaled[:, idx], n=window)
+    act_array_descaled_ma[window - 1:, idx] = moving_average(act_array_descaled[:, idx], n=window)
 
 # Controller actions, descaled, regular and moving avg
+fig = plt.figure(figsize=(8, 4.5))
 pts = 12000
 for idx in range(act_array_descaled.shape[1]):
     # Color choice index
@@ -208,13 +249,16 @@ for idx in range(act_array_descaled.shape[1]):
     plt.plot(x[0:pts], act_array_descaled[0:pts, idx],
              color=c, linestyle='solid', linewidth=1.0, alpha=0.5)
     plt.plot(x[0:pts], act_array_descaled_ma[0:pts, idx],
-             color=c, linestyle='solid', linewidth=1.0, label=f'Extruder {idx+1}', alpha=1.0)
+             color=c, linestyle='solid', linewidth=1.0, label=f'Extruder {idx + 1}', alpha=1.0)
 plt.title(f'Actions - Descaled')
 plt.xlabel('Time [s]')
 plt.ylabel('Change in RPM vs Original Experiment')
 plt.legend()
 plt.show()
-
+f = 'rpm_changes_vs_experiment.png'
+t = p / f
+image_saver(fig, t)
+plt.close('all')
 
 # ============================================================================
 # Quick and dirty plotting: Controller raw input sigs, De-scaled (assumes StandardScaler)
@@ -229,6 +273,7 @@ delta_len = len(inputs_descaled) - len(act_array_descaled)
 inputs_descaled_w_nudge = inputs_descaled[:-delta_len] + act_array_descaled
 
 # Descaled inputs
+fig = plt.figure(figsize=(8, 4.5))
 for idx in range(inputs_descaled.shape[1]):
     # Color choice index
     c = color_cycle[idx % len(color_cycle)]
@@ -241,7 +286,10 @@ plt.xlabel('Time [s]')
 plt.ylabel('RPM')
 plt.legend()
 plt.show()
-
+f = 'rpm_actual_values.png'
+t = p / f
+image_saver(fig, t)
+plt.close('all')
 
 # ============================================================================
 # Workspace cleanup

@@ -12,7 +12,7 @@ cloudpickle == 1.2.1
 # spinup\algos\pytorch\vpg\core.py: 3
 # spinup\algos\pytorch\vpg\vpg.py: 4
 # spinup\algos\tf1\cc_exercise_simplest_policy\cc_simplest.py: 4
-# spinup\algos\tf1\cc_exercise_simplest_policy\cc_example.py: 1
+# spinup\algos\tf1\cc_exercise_simplest_policy\cc_project_runner.py: 1
 # spinup\algos\tf1\ddpg\ddpg.py: 3
 # spinup\algos\tf1\ppo\core.py: 4
 # spinup\algos\tf1\ppo\ppo.py: 3

@@ -34,3 +34,8 @@
 # TODO: Make pass-through mode for controllers... so we can turn them on/off individually. What will the
 #  policy agent learn if one of it's actions has no effect on the world...? Better regularize the actions
 #  so it gets a penalty for "firing" the disabled controller with no possible reward...
+
+# TODO: Time to run in incremental controller mode w tighter action limits? Policy might still reach
+#  large RPM adjustments, but slowly over time
+
+# TODO: Make agent dumber or smarter? More or less memory units?

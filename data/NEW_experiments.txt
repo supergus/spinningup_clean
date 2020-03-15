@@ -1,0 +1,61 @@
+NEW_0:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0.5
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'absolute'
+
+NEW_1:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 25,000
+    epochs: 100
+    hidden_sizes: 256 x 2
+    controller_mode: 'absolute'
+
+NEW_2:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 64 x 2
+    controller_mode: 'absolute'
+
+NEW_3:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 128 x 2
+    controller_mode: 'absolute'
+
+NEW_4:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 3
+    controller_mode: 'absolute'
+
+NEW_5:
+    base_rew: 0
+    rmse_factor: 2
+    reg_factor: 0
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'incremental'
+    action_min = -0.1
+    action_max = 0.1
+
+also train for 1 or two touches, then plot response of that "untrained" policy.
+how different from "trained"?
+
+
+For test episodes: always start at same playhead? Not random? And if "done" then just keep going?

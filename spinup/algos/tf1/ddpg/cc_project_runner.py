@@ -46,10 +46,10 @@ controller_params = {
     'verbosity': 2,  # [0, 1, 2]; 1: Warnings only; 2: Full verbosity
 }
 
-logger_kwargs = setup_logger_kwargs('foo_experiment', 42)
+logger_kwargs = setup_logger_kwargs('current_experiment')
 
 env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=core.mlp_actor_critic,
-                                  ac_kwargs=dict(hidden_sizes=[256] * 2),
+                                  ac_kwargs=dict(hidden_sizes=[64] * 2),
                                   gamma=0.99, seed=42,
 
                                   # # FOR QUICK TESTS
@@ -57,7 +57,7 @@ env, logger, replay_buffer = ddpg(lambda: gym.make('liveline-v0'), actor_critic=
                                   # max_ep_len=10, num_test_episodes=2,
 
                                   # TRAINING
-                                  steps_per_epoch=4000, epochs=100, start_steps=25000, update_after=1000,
+                                  steps_per_epoch=4000, epochs=50, start_steps=10000, update_after=1000,
                                   update_every=50,
                                   max_ep_len=1000, num_test_episodes=10,  # more test eps? 20? More start_steps?
 
