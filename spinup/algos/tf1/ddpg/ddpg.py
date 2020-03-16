@@ -245,11 +245,11 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
     def test_agent():
 
-        # Set first playhead location randomly (verify settings above; we forced reset_index_mode = 'random')
-        test_env.reset()
-        # Capture playhead location; we will maintain this as a state variable below so we can
-        # force the test simulation to move sequentially through the data across epochs.
-        playhead = copy.copy(test_env.playhead)
+        # # Set first playhead location randomly (verify settings above; we forced reset_index_mode = 'random')
+        # test_env.reset()
+        # # Capture playhead location; we will maintain this as a state variable below so we can
+        # # force the test simulation to move sequentially through the data across epochs.
+        # playhead = copy.copy(test_env.playhead)
 
         for j in range(num_test_episodes):
 
@@ -265,7 +265,7 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             print(f'\tResetting test_env...')
 
             # Reset test_env with playhead at "current" batch; see how far we can get
-            o, d, ep_ret, ep_len = test_env.reset(playhead=playhead), False, 0, 0
+            o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
 
             # DEBUG
             print(f'\tObs at reset j({j}): {list_of_nums_to_string(o)}\n')
@@ -302,10 +302,10 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
 
             logger.store(TestEpRet=ep_ret, TestEpLen=ep_len)
 
-            # Set playhead and done flag for next reset above
-            playhead = copy.copy(test_env.playhead)
-            if d:
-                test_env.returns['done'] = False
+            # # Set playhead and done flag for next reset above
+            # playhead = copy.copy(test_env.playhead)
+            # if d:
+            #     test_env.returns['done'] = False
 
     # Prepare for interaction with environment
     total_steps = steps_per_epoch * epochs

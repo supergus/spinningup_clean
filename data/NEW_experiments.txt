@@ -117,11 +117,23 @@ NEW_10:
     action_min = -0.1
     action_max = 0.1
 
-NEW_11:  <-------- RUNNING
+NEW_11:
     base_rew: 0
     rmse_factor: 2
     areg_factor: 0
     nreg_factor: 2
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'incremental'
+    action_min = -0.1
+    action_max = 0.1
+
+NEW_12: <---------- RUNNING
+    base_rew: 0
+    rmse_factor: 2
+    areg_factor: 0
+    nreg_factor: 4
     start_steps: 10,000
     epochs: 50
     hidden_sizes: 256 x 2

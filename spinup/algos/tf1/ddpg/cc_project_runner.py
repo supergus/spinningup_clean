@@ -25,7 +25,7 @@ env_params = {
     'base_reward': 0.0,  # 1.0
     'rmse_factor': 2.0,  # 2.0
     'areg_factor': 0.0,  # 0.5
-    'nreg_factor': 2.0,  # 0.5
+    'nreg_factor': 4.0,  # 0.5
     'controller_mode': 'incremental',  # {'incremental', 'absolute'}
     'data_mode': 'all',  # {'all', 'train', 'test', 'val'}
     'step_index_mode': 'sequential',  # {'sequential', 'random'}

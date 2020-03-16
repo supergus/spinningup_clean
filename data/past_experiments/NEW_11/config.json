@@ -1,0 +1,76 @@
+{
+    "ac_kwargs":	{
+        "hidden_sizes":	[
+            256,
+            256
+        ]
+    },
+    "act_noise":	0.1,
+    "actor_critic":	"mlp_actor_critic",
+    "batch_size":	100,
+    "controller_params":	{
+        "controller_mode":	"incremental",
+        "nudge_delta_max":	Infinity,
+        "nudge_delta_min":	-Infinity,
+        "nudge_lim_max":	Infinity,
+        "nudge_lim_min":	-Infinity,
+        "output_delta_max":	Infinity,
+        "output_delta_min":	-Infinity,
+        "output_lim_max":	Infinity,
+        "output_lim_min":	-Infinity,
+        "verbosity":	2
+    },
+    "env_fn":	"<function <lambda> at 0x00000152E1C0D828>",
+    "env_params":	{
+        "action_max":	0.1,
+        "action_min":	-0.1,
+        "areg_factor":	0.0,
+        "base_reward":	0.0,
+        "controller_mode":	"incremental",
+        "data_mode":	"all",
+        "nreg_factor":	2.0,
+        "obs_max":	2.0,
+        "obs_min":	-2.0,
+        "reset_index_mode":	"random",
+        "rmse_factor":	2.0,
+        "seed_value":	42,
+        "step_index_mode":	"sequential",
+        "trim_batches_end":	100,
+        "trim_batches_start":	200,
+        "verbosity":	2
+    },
+    "epochs":	50,
+    "exp_name":	"NEW",
+    "gamma":	0.99,
+    "logger":	{
+        "<spinup.utils.logx.EpochLogger object at 0x00000152E1C9CD08>":	{
+            "epoch_dict":	{},
+            "exp_name":	"NEW",
+            "first_row":	true,
+            "log_current_row":	{},
+            "log_headers":	[],
+            "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\NEW",
+            "output_file":	{
+                "<_io.TextIOWrapper name='D:\\\\chris\\\\Documents\\\\Programming\\\\liveline_repos\\\\ll_spinningup_clean\\\\data\\\\NEW\\\\progress.txt' mode='w' encoding='cp1252'>":	{
+                    "mode":	"w"
+                }
+            }
+        }
+    },
+    "logger_kwargs":	{
+        "exp_name":	"NEW",
+        "output_dir":	"D:\\chris\\Documents\\Programming\\liveline_repos\\ll_spinningup_clean\\data\\NEW"
+    },
+    "max_ep_len":	1000,
+    "num_test_episodes":	10,
+    "pi_lr":	0.001,
+    "polyak":	0.995,
+    "q_lr":	0.001,
+    "replay_size":	1000000,
+    "save_freq":	1,
+    "seed":	42,
+    "start_steps":	10000,
+    "steps_per_epoch":	4000,
+    "update_after":	1000,
+    "update_every":	50
+}
