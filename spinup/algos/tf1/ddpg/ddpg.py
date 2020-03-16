@@ -143,14 +143,17 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
     env, test_env = env_fn(), env_fn()
 
     # DEBUG: cc
-    print(colorize('\n\nUpdating environment parameters...\n\n', color='yellow', bold=False))
+    print(colorize('\n\nUpdating environment parameters:\n\n', color='yellow', bold=False))
 
-    print(colorize('\t> Training environment:', color='yellow', bold=False))
+    print(colorize('\t> Training environment...', color='yellow', bold=False))
     env.update(**env_params)
     for c in env.controllers:
         c.update_parameters(**controller_params)
 
-    print(colorize('\n\n\t> Test environment:', color='yellow', bold=False))
+    print(colorize('\n\n\t> Test environment...', color='yellow', bold=False))
+    # Force reset_index_mode to 'random'; If zero, we might always reset to a location that gives
+    # a first observation that throws the 'done' flag.
+    env_params['reset_index_mode'] = 'random'
     test_env.update(**env_params)
     for c in test_env.controllers:
         c.update_parameters(**controller_params)
@@ -241,6 +244,13 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         return np.clip(a, -act_limit, act_limit)
 
     def test_agent():
+
+        # Set first playhead location randomly (verify settings above; we forced reset_index_mode = 'random')
+        test_env.reset()
+        # Capture playhead location; we will maintain this as a state variable below so we can
+        # force the test simulation to move sequentially through the data across epochs.
+        playhead = copy.copy(test_env.playhead)
+
         for j in range(num_test_episodes):
 
             # DEBUG cc
@@ -254,28 +264,20 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             # DEBUG
             print(f'\tResetting test_env...')
 
-            o, d, ep_ret, ep_len = test_env.reset(), False, 0, 0
-
-            print(f'\tObs at reset j({j}): {list_of_nums_to_string(o)}\n')
-
+            # Reset test_env with playhead at "current" batch; see how far we can get
+            o, d, ep_ret, ep_len = test_env.reset(playhead=playhead), False, 0, 0
 
             # DEBUG
-            if list_of_nums_to_string(o).find('nan') != -1:
-                test_env.last_obs_before_oopsie = o
-                print('\n\nOOPSIE! at test reset\n\n')
-                # exit()
+            print(f'\tObs at reset j({j}): {list_of_nums_to_string(o)}\n')
             print(f'\tobs: {list_of_nums_to_string(o)}')
 
             while not (d or (ep_len == max_ep_len)):
+
                 # DEBUG cc
                 print(colorize(f'Test rollout step: {ep_len} (of max {max_ep_len}), '
                                f'epoch: {j} (of {num_test_episodes})',
                                color='gray', bold=True))
-
-                # TODO: Needed?
-                # rolling_setpoints(test_env)
-
-                # DEBUG
+                # rolling_setpoints(test_env)   # TODO: Needed?
                 print(f'\tSetpoints: {list_of_nums_to_string(list(test_env.lpp.data.output_setpoints.values()))}')
 
                 # Take deterministic actions at test time (noise_scale=0)
@@ -285,16 +287,10 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
                 print(colorize(f'\tTaking test action: {list_of_nums_to_string(test_action)}',
                                color='red', bold=False))
 
-                # o, r, d, _ = test_env.step(get_action(o, 0))
                 o, r, d, _ = test_env.step(test_action)
 
                 # DEBUG cc
-                if list_of_nums_to_string(o).find('nan') != -1:
-                    test_env.last_obs_before_oopsie = o
-                    print('\n\nOOPSIE at test step!\n\n')
-                    # exit()
                 print(f'\ttest_env playhead after step: {test_env.playhead}')
-                # DEBUG cc
                 print(colorize(f'\tObs from LPP: {list_of_nums_to_string(o)}\n', color='white', bold=False))
 
                 ep_ret += r
@@ -305,6 +301,11 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
             print(colorize(my_str, color='yellow', bold=True))
 
             logger.store(TestEpRet=ep_ret, TestEpLen=ep_len)
+
+            # Set playhead and done flag for next reset above
+            playhead = copy.copy(test_env.playhead)
+            if d:
+                test_env.returns['done'] = False
 
     # Prepare for interaction with environment
     total_steps = steps_per_epoch * epochs
@@ -356,18 +357,12 @@ def ddpg(env_fn, actor_critic=core.mlp_actor_critic, ac_kwargs=dict(), seed=0,
         # Store experience to replay buffer
         replay_buffer.store(raw[0], o, a, r, o2, d)
 
-        # Super critical, easy to overlook step: make sure to update 
-        # most recent observation!
+        # Super critical, easy to overlook step: make sure to update most recent observation!
         o = o2
-
-        # DEBUG cc
-        if list_of_nums_to_string(o).find('nan') != -1:
-            env.last_obs_before_oopsie = o
-            print('\n\nOOPSIE at train step!\n\n')
-            # exit()
 
         # End of trajectory handling
         if d or (ep_len == max_ep_len):
+
             # DEBUG cc
             my_str = f'\n\nEnd of training trajectory: d={d}, ep_len={ep_len}, max_ep_len={max_ep_len}\n\n'
             print(colorize(my_str, color='yellow', bold=True))

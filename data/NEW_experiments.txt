@@ -79,7 +79,7 @@ NEW_7:
     controller_mode: 'absolute'
 
 =================================================================
-INCREMENTAL CONTROLLER MODE
+INCREMENTAL CONTROLLER MODE, nreg_factor AS HPARAM
 =================================================================
 
 NEW_8:
@@ -94,7 +94,41 @@ NEW_8:
     action_max = 0.1
 
 NEW_9:
-    regularize? but do it on NUDGE not the ACTIONS.
+    base_rew: 0
+    rmse_factor: 2
+    areg_factor: 0
+    nreg_factor: 0.5
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'incremental'
+    action_min = -0.1
+    action_max = 0.1
+
+NEW_10:
+    base_rew: 0
+    rmse_factor: 2
+    areg_factor: 0
+    nreg_factor: 1
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'incremental'
+    action_min = -0.1
+    action_max = 0.1
+
+NEW_11:  <-------- RUNNING
+    base_rew: 0
+    rmse_factor: 2
+    areg_factor: 0
+    nreg_factor: 2
+    start_steps: 10,000
+    epochs: 50
+    hidden_sizes: 256 x 2
+    controller_mode: 'incremental'
+    action_min = -0.1
+    action_max = 0.1
+
 
 
 also train for 1 or two touches, then plot response of that "untrained" policy.

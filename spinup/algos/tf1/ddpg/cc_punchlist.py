@@ -50,3 +50,7 @@
 #  Start with trimming_start batch, roll forward. If episode ends, start next episode at next batch.
 #  This may give a better look at how "far" the policy can get us through the same data on each test.
 #  Increase test episodes so we get most of the way through the data.
+
+# TODO: For rewards... if no base rew, then even if we're running closer to nominal, avg ep ret may
+#  not get much better epoch to epoch if we're running longer rollouts (fewer 'done' flags, etc.).
+#  This is true for testing as well. Add some BASS?
