@@ -151,7 +151,7 @@ setuptools == 45.2.0
 # spinup\utils\mpi_tf.py: 2
 # spinup\utils\test_policy.py: 5
 # test\test_ppo.py: 7
-tensorflow_gpu == 1.15.2
+tensorflow_gpu == 2.5.3
 
 # spinup\algos\pytorch\ddpg\core.py: 4,5
 # spinup\algos\pytorch\ddpg\ddpg.py: 3,4
