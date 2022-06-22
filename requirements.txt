@@ -94,7 +94,7 @@ mpi4py == 3.0.3
 # spinup\utils\mpi_tools.py: 3
 # spinup\utils\plot.py: 7
 # spinup\utils\run_utils.py: 10
-numpy == 1.18.1
+numpy == 1.22.0
 
 # spinup\exercises\pytorch\problem_set_1\exercise1_2.py: 114
 # spinup\exercises\tf1\problem_set_1\exercise1_2.py: 98
