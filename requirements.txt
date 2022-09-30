@@ -37,7 +37,7 @@ gym == 0.15.7
 
 # spinup\utils\logx.py: 9
 # spinup\utils\test_policy.py: 2
-joblib == 0.14.1
+joblib == 1.2.0
 
 # spinup\utils\plot.py: 3
 matplotlib == 3.1.1
